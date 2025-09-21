@@ -110,7 +110,7 @@ def init_sample_data():
             db.add(customer)
             db.commit()
 
-            print("Sample data inserted successfully ✅")
+            print("Sample data inserted successfully. ✅")
     finally:
         db.close()
 
