@@ -72,35 +72,49 @@ Base.metadata.create_all(bind=engine)
 def init_sample_data():
     db = SessionLocal()
     try:
+        # Only insert if no restaurant exists
         if not db.query(Restaurant).first():
-            # Add restaurant
-            r = Restaurant(name="Pizza Place", address="123 Main St", phone="1234567890")
-            db.add(r)
+            
+            # ---- Restaurants ----
+            r1 = Restaurant(name="Pizza Place", address="123 Main St", phone="1234567890")
+            r2 = Restaurant(name="Burger Corner", address="456 Side St", phone="9876543210")
+            db.add_all([r1, r2])
             db.commit()
-            db.refresh(r)
+            db.refresh(r1)
+            db.refresh(r2)
 
-            # Add categories
-            cat1 = MenuCategory(name="Pizza", restaurant_id=r.id)
-            cat2 = MenuCategory(name="Drinks", restaurant_id=r.id)
-            db.add_all([cat1, cat2])
+            # ---- Categories ----
+            cat1 = MenuCategory(name="Pizza", restaurant_id=r1.id)
+            cat2 = MenuCategory(name="Drinks", restaurant_id=r1.id)
+            cat3 = MenuCategory(name="Burgers", restaurant_id=r2.id)
+            cat4 = MenuCategory(name="Drinks", restaurant_id=r2.id)
+            db.add_all([cat1, cat2, cat3, cat4])
             db.commit()
             db.refresh(cat1)
             db.refresh(cat2)
+            db.refresh(cat3)
+            db.refresh(cat4)
 
-            # Add menu items
-            item1 = MenuItem(name="Margherita", description="Cheese pizza", price=5.99, category_id=cat1.id)
-            item2 = MenuItem(name="Coke", description="Soft drink", price=1.5, category_id=cat2.id)
-            db.add_all([item1, item2])
+            # ---- Menu Items ----
+            items = [
+                MenuItem(name="Margherita", description="Cheese pizza", price=5.99, category_id=cat1.id),
+                MenuItem(name="Coke", description="Soft drink", price=1.5, category_id=cat2.id),
+                MenuItem(name="Veggie Burger", description="Tasty veggie burger", price=4.5, category_id=cat3.id),
+                MenuItem(name="Pepsi", description="Soft drink", price=1.5, category_id=cat4.id)
+            ]
+            db.add_all(items)
             db.commit()
 
-            # Add customer
-            customer = Customer(name="Sindhur", email="sindhur@example.com", phone="9876543210")
+            # ---- Customer ----
+            customer = Customer(name="Sindhur", email="sindhur@example.com", phone="1122334455")
             db.add(customer)
             db.commit()
+
+            print("Sample data inserted successfully ✅")
     finally:
         db.close()
 
-# Call the function once at app startup
+# Call this function once at app startup
 init_sample_data()
 
 # ----------------- 5. FastAPI app -----------------
